@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Арқан тартыс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE  occasion: сыныптағы командалық жарыс, ойын
+   IDEA   Наурыз тойындағы дала алаңы: табло, арқан, жеңіс сызықтары
+   PICTURE дала сахнасы: екі ойыншы арқан тартады, алтын лента жеңіс туына қарай жылжиды
+   COLOUR көк команда #1d5bd6, қызыл команда #e0382b, алтын #ffc83d, дала сарысы мен аспан
+   TYPE   Unbounded 800 (табло, аттар) + Nunito (сұрақтар)
+   LAYOUT табло жоғарыда, сахна ортада, екі команда панелі төменде қатар; телефонда бір бағанға */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0c1020);--ink:light-dark(#141726,#eef1fb);--mute:light-dark(#5b6075,#a7aec6);
+--panel:light-dark(#ffffff,#161b30);--line:light-dark(#dfe2ec,#2a3150);
+--L:light-dark(#1d5bd6,#2a62d8);--Ld:light-dark(#123f9e,#173d8f);
+--R:light-dark(#e0382b,#c8352a);--Rd:light-dark(#a8221a,#8d2019);
+--gold:#ffc83d;
+--sky1:light-dark(#4aa9ef,#081130);--sky2:light-dark(#d6efff,#30306a);
+--far:light-dark(#b3c5ec,#272f61);--snow:light-dark(#ffffff,#8f97c9);--near:light-dark(#86abd9,#1c2350);
+--g1:light-dark(#f3cf64,#5a4b26);--g2:light-dark(#d79d3a,#2c2515);--tuft:light-dark(#b9832a,#7d6838);
+--star:light-dark(rgba(255,255,255,0),#ffffff);--cloud:light-dark(rgba(255,255,255,.95),rgba(255,255,255,.05));
+--sunc:light-dark(#ffcf3d,#f4f0dc);--yurt:light-dark(#fbf6ea,#cfc8b6);--chalk:light-dark(rgba(255,255,255,.92),rgba(255,255,255,.5));
+--opt:light-dark(#ffffff,#f1f3fa)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 Nunito,"Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;overflow-x:clip}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.board{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"l m r";align-items:center;gap:12px;padding:10px max(2vw,16px)}
+.tm{display:flex;align-items:center;gap:14px}
+.tm.L{grid-area:l}
+.tm.R{grid-area:r;justify-content:flex-end}
+.nm{font:800 clamp(16px,2vw,26px)/1.1 Unbounded,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.L .nm{color:var(--L)}
+.R .nm{color:var(--R)}
+.sc{font:800 clamp(28px,3.4vw,44px)/1 Unbounded,sans-serif;color:#fff;min-width:1.8em;padding:8px 10px;border-radius:14px;text-align:center;font-variant-numeric:tabular-nums}
+.L .sc{background:var(--L)}
+.R .sc{background:var(--R)}
+.mid{grid-area:m;text-align:center}
+h1{margin:0;font:800 clamp(20px,2.4vw,32px)/1.05 Unbounded,sans-serif;letter-spacing:-.02em}
+.row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px}
+.clock{font:600 20px Unbounded,sans-serif;font-variant-numeric:tabular-nums;min-width:4.2ch;margin-right:6px}
+.clock.low{color:var(--R);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.ic{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:12px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}
+.ic:hover{background:color-mix(in srgb,var(--ink) 15%,transparent)}
+.ic svg{width:22px;height:22px;fill:currentColor}
+.ic svg .o,svg.o .o{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.orn{height:14px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14'%3E%3Cpath d='M20 13C20 6 13 2 9 5C6 7 8 11 11 10M20 13C20 6 27 2 31 5C34 7 32 11 29 10M0 13H40' fill='none' stroke='%23e0a526' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x;background-size:40px 14px}
+.arena{position:relative;flex:1 1 auto;min-height:220px;background:var(--sky2)}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sides{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);flex:none}
+.side{position:relative;padding:16px clamp(14px,2vw,28px) 20px;color:#fff;overflow:hidden}
+.side.L{background:var(--L)}
+.side.R{background:var(--R)}
+.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tn{font:800 18px/1.1 Unbounded,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.left{font-weight:800;font-size:15px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.18);white-space:nowrap}
+.qn{margin-left:auto;font-weight:800;font-size:14px;opacity:.8;font-variant-numeric:tabular-nums}
+.str{font-weight:900;font-size:15px;padding:4px 12px;border-radius:99px;background:var(--gold);color:#3a2700;opacity:0;transform:scale(.8);transition:.25s}
+.str.on{opacity:1;transform:none}
+.q{margin:12px 0 14px;font:900 clamp(21px,2.3vw,31px)/1.2 Nunito,sans-serif;min-height:2.4em;text-wrap:balance}
+.opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.opt{display:flex;align-items:center;gap:12px;min-height:62px;padding:10px 14px;border:0;border-radius:14px;background:var(--opt);color:#141726;font-weight:800;font-size:clamp(17px,1.7vw,22px);line-height:1.15;text-align:left;box-shadow:0 4px 0 rgba(0,0,0,.22);transition:transform .08s,box-shadow .08s,background .15s}
+.opt:hover{transform:translateY(-1px)}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
+.opt kbd{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;font:800 14px Unbounded,sans-serif;color:#fff}
+.L .opt kbd{background:var(--L)}
+.R .opt kbd{background:var(--R)}
+.opt.ok{background:#1fae5b;color:#fff}
+.opt.ok kbd{background:#137a3e}
+.opt.bad{background:#1b1d29;color:#fff;text-decoration:line-through;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opts.wait{pointer-events:none}
+.idle .opt{pointer-events:none;opacity:.8}
+.lock{position:absolute;inset:0;display:none;place-content:center;gap:12px;text-align:center;background:rgba(10,12,24,.55);font:800 22px Unbounded,sans-serif}
+.lock.on{display:grid}
+.lock i{display:block;height:8px;width:220px;max-width:70vw;border-radius:9px;background:var(--gold);transform-origin:left;animation:drain var(--pen,2s) linear forwards}
+@keyframes drain{to{transform:scaleX(0)}}
+/* scene */
+.st{fill:var(--star)}.cl{fill:var(--cloud)}.sun{fill:var(--sunc)}.halo{fill:var(--sunc);opacity:.2}
+.far{fill:var(--far)}.snow{fill:var(--snow)}.near{fill:var(--near)}.yurt{fill:var(--yurt)}.door{fill:#8a5a2b}
+.ybL{fill:var(--L)}.ybR{fill:var(--R)}.tuft{stroke:var(--tuft);stroke-width:3;fill:none;stroke-linecap:round}
+.chalk{fill:var(--chalk)}.pole{stroke:#6b4a2a;stroke-width:5;stroke-linecap:round}.flL{fill:var(--L)}.flR{fill:var(--R)}
+.rope{stroke:#c8965a;stroke-width:10;fill:none}.rope2{stroke:#8d6535;stroke-width:10;stroke-dasharray:4 8;fill:none}
+.knot{fill:var(--gold);stroke:#b78512;stroke-width:2}.rib{fill:var(--gold)}.rib2{fill:#e2a118}
+.shadow{fill:rgba(40,25,5,.22)}.leg{stroke:#2a2f45;stroke-width:17;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.shoe{fill:#17181f}.torso{stroke-width:34;stroke-linecap:round;fill:none}.arm{stroke-width:12;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.skin{fill:#e5ad84}.hair{fill:#2a1b14}.band{stroke-width:6;stroke-linecap:round;fill:none}.eye{fill:#1a1410}.mouth{stroke:#7a3a2a;stroke-width:3;stroke-linecap:round}
+.belt{stroke:var(--gold);stroke-width:5;stroke-linecap:round}
+#pull{transition:transform .6s cubic-bezier(.3,1.45,.5,1)}
+.body{transform-box:fill-box;transform-origin:45% 100%;transition:transform .5s}
+.body.tug{animation:tug .55s ease-out}
+.body.stum{animation:stum .55s ease-out}
+.body.fallen{transform:rotate(30deg)}
+.body.cheer{animation:cheer .5s ease-in-out 5}
+@keyframes tug{30%{transform:rotate(-10deg)}}
+@keyframes stum{30%{transform:rotate(12deg)}}
+@keyframes cheer{50%{transform:translateY(-26px)}}
+.puff{transform-box:fill-box;transform-origin:center;fill:var(--g1);stroke:var(--tuft);stroke-width:1.5;animation:puff .7s ease-out forwards}
+@keyframes puff{from{opacity:.9;transform:scale(.3)}to{opacity:0;transform:translate(var(--dx),-16px) scale(1.7)}}
+.pop{font:800 38px Unbounded,sans-serif;paint-order:stroke;stroke:#fff;stroke-width:7px;text-anchor:middle;transform-box:fill-box;animation:pop .9s ease-out forwards}
+@keyframes pop{0%{opacity:0;transform:translateY(12px)}20%{opacity:1}100%{opacity:0;transform:translateY(-60px)}}
+/* overlays */
+.ov{position:fixed;inset:0;z-index:10;display:none;place-items:center;padding:16px;background:rgba(8,12,28,.5);backdrop-filter:blur(3px)}
+.ov.on{display:grid}
+.card{width:100%;max-width:640px;max-height:calc(100vh - 32px);overflow:auto;background:var(--panel);color:var(--ink);border-radius:22px;padding:22px clamp(16px,3vw,30px) 26px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+h2{margin:0;font:800 clamp(22px,3vw,32px)/1.1 Unbounded,sans-serif;letter-spacing:-.02em}
+.names{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:6px}
+.nf span,.fld>span{display:block;font-weight:800;font-size:14px;color:var(--mute);margin-bottom:6px}
+.nf input,textarea{width:100%;font:700 16px Nunito,sans-serif;color:var(--ink);background:transparent;border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.nf.L input{border-color:var(--L)}
+.nf.R input{border-color:var(--R)}
+textarea{font-weight:600;line-height:1.4;resize:vertical}
+.fld{margin-top:14px}
+.fld small{display:block;margin-top:6px;color:var(--mute);font-size:14px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{min-height:44px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font-weight:800;font-size:15px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hint{margin:16px 0;color:var(--mute);font-size:14px}
+.big{min-height:54px;padding:12px 28px;border:0;border-radius:14px;background:var(--gold);color:#3a2700;font:800 18px Unbounded,sans-serif;box-shadow:0 4px 0 #c9921a}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #c9921a}
+.ghost{min-height:54px;padding:12px 22px;border:2px solid var(--line);border-radius:14px;background:transparent;color:var(--ink);font-weight:800;font-size:16px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.win{padding:0;overflow:auto}
+.wh{padding:22px 26px;color:#fff;background:#6b6f80}
+.win.L .wh{background:var(--L)}
+.win.R .wh{background:var(--R)}
+.wh p{margin:0;font-weight:800;opacity:.9}
+.wh h2{font-size:clamp(30px,5vw,52px);overflow-wrap:anywhere}
+.wb{padding:18px 26px 24px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left;color:var(--mute);font-weight:700}
+th{font-family:Unbounded,sans-serif;font-size:14px}
+#conf{position:fixed;inset:0;pointer-events:none;z-index:20;overflow:hidden}
+#conf i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(760deg)}}
+@media(max-width:640px){
+html,body{height:auto}
+.arena{flex:none;height:50vw;min-height:200px}
+.sides{grid-template-columns:minmax(0,1fr)}
+.board{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"l r" "m m"}
+.names{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){#pull,.body{transition:none}.body,.puff,.pop,.opt.bad,.clock.low{animation:none!important}#conf{display:none}}
+</style>
+</head>
+<body>
+<header class="board">
+  <div class="tm L"><b class="sc" id="scL">0</b><span class="nm" id="nmL">Көктер</span></div>
+  <div class="mid">
+    <h1>Арқан тартыс</h1>
+    <div class="row">
+      <span class="clock" id="clock">2:00</span>
+      <button class="ic" id="bPause" aria-label="Үзіліс"></button>
+      <button class="ic" id="bSet" aria-label="Баптаулар"><svg viewBox="0 0 24 24"><path class="o" d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle class="o" cx="16" cy="7" r="2.6"/><circle class="o" cx="10" cy="17" r="2.6"/></svg></button>
+      <button class="ic" id="bSnd" aria-label="Дыбыс"></button>
+      <button class="ic" id="bFs" aria-label="Толық экран"><svg viewBox="0 0 24 24"><path class="o" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+  </div>
+  <div class="tm R"><span class="nm" id="nmR">Қызылдар</span><b class="sc" id="scR">0</b></div>
+</header>
+<div class="orn"></div>
+<div class="arena"><svg id="scene" role="img" aria-label="Арқан тартыс алаңы"></svg></div>
+<main class="sides idle" id="sides">
+  <section class="side L" id="sL" data-s="L">
+    <div class="sh"><span class="tn"></span><span class="left">Жеңіске <b>6</b> тартыс</span><span class="str">Қатарынан <b>3</b>!</span><span class="qn"></span></div>
+    <p class="q" aria-live="polite"></p><div class="opts"></div>
+    <div class="lock"><span>Қате! Арқан босады</span><i></i></div>
+  </section>
+  <section class="side R" id="sR" data-s="R">
+    <div class="sh"><span class="tn"></span><span class="left">Жеңіске <b>6</b> тартыс</span><span class="str">Қатарынан <b>3</b>!</span><span class="qn"></span></div>
+    <p class="q" aria-live="polite"></p><div class="opts"></div>
+    <div class="lock"><span>Қате! Арқан босады</span><i></i></div>
+  </section>
+</main>
+
+<div class="ov" id="ovSet"><div class="card" role="dialog" aria-labelledby="setT">
+  <div class="ch"><h2 id="setT">Жарысқа дайындық</h2><button class="ic" id="bClose" aria-label="Жабу"><svg viewBox="0 0 24 24"><path class="o" d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="names">
+    <label class="nf L"><span>Сол жақ команда</span><input id="iL" maxlength="22" autocomplete="off"></label>
+    <label class="nf R"><span>Оң жақ команда</span><input id="iR" maxlength="22" autocomplete="off"></label>
+  </div>
+  <div class="fld"><span>Сұрақтар</span><div class="seg" data-k="mode"></div></div>
+  <div class="fld" id="fLvl"><span>Есеп деңгейі</span><div class="seg" data-k="lvl"></div></div>
+  <div class="fld" id="fOwn"><span>Әр жолға бір сұрақ: сұрақ | дұрыс жауап | қате | қате | қате</span>
+    <textarea id="iOwn" rows="5" placeholder="Жердің табиғи серігі | Ай | Марс | Күн | Шолпан&#10;Судың қайнау температурасы | 100 °C | 50 °C | 0 °C | 200 °C"></textarea><small id="ownN"></small></div>
+  <div class="fld"><span>Жеңіске дейінгі тартыс саны</span><div class="seg" data-k="need"></div></div>
+  <div class="fld"><span>Ойын уақыты</span><div class="seg" data-k="time"></div></div>
+  <div class="fld"><span>Қате жауап берілсе</span><div class="seg" data-k="pen"></div></div>
+  <p class="hint">Әр команда өз сұрағына жауап береді. Пернетақта: сол команда 1–4, оң команда 7, 8, 9, 0; бос орын пернесі – үзіліс.</p>
+  <button class="big" id="bGo">Жарысты бастау</button>
+</div></div>
+
+<div class="ov" id="ovPause"><div class="card" role="dialog" aria-labelledby="pT">
+  <h2 id="pT">Үзіліс</h2><p class="hint">Арқан осы күйінде тұр. Дайын болғанда жалғастырыңыз.</p>
+  <div class="acts"><button class="big" id="bResume">Жалғастыру</button><button class="ghost" id="bRestart">Қайта бастау</button></div>
+</div></div>
+
+<div class="ov" id="ovWin"><div class="card win" id="winCard" role="dialog" aria-labelledby="wName">
+  <div class="wh"><p id="wWhy">Жеңімпаз</p><h2 id="wName"></h2></div>
+  <div class="wb">
+    <table><thead><tr><th></th><th id="wT1"></th><th id="wT2"></th></tr></thead><tbody id="wBody"></tbody></table>
+    <p class="hint" id="wTime"></p>
+    <div class="acts"><button class="big" id="bAgain">Қайта ойнау</button><button class="ghost" id="bToSet">Баптаулар</button></div>
+  </div>
+</div></div>
+<div id="conf"></div>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const PHYS=[
+['Жылдамдықтың ХБЖ-дағы өлшем бірлігі','м/с','м/с²','км/сағ','Н'],
+['Үдеудің ХБЖ-дағы өлшем бірлігі','м/с²','м/с','Н·м','Дж'],
+['Күштің өлшем бірлігі','Ньютон','Джоуль','Ватт','Паскаль'],
+['Жұмыстың өлшем бірлігі','Джоуль','Ватт','Ньютон','Паскаль'],
+['Қуаттың өлшем бірлігі','Ватт','Джоуль','Вольт','Ньютон'],
+['Жиіліктің өлшем бірлігі','Герц','Секунд','Метр','Ньютон'],
+['Ньютонның екінші заңының формуласы','F = ma','F = mg','p = mυ','E = mgh'],
+['Ньютонның үшінші заңы','Әсер қарсы әсерге тең','Инерция заңы','F = ma','Бүкіләлемдік тартылыс заңы'],
+['Дене импульсінің формуласы','p = mυ','p = ma','p = F/S','p = mgh'],
+['Кинетикалық энергияның формуласы','E = mυ²/2','E = mgh','E = mυ','E = kx'],
+['Жерден h биіктіктегі дененің потенциалдық энергиясы','E = mgh','E = mυ²/2','E = mg/h','E = mh'],
+['Еркін түсу үдеуі шамамен','9,8 м/с²','98 м/с²','1,6 м/с²','3·10⁸ м/с'],
+['Жарықтың вакуумдағы жылдамдығы','3·10⁸ м/с','3·10⁵ м/с','340 м/с','9,8 м/с'],
+['Дыбыстың ауадағы жылдамдығы шамамен','340 м/с','3·10⁸ м/с','34 м/с','3400 м/с'],
+['Период пен жиіліктің байланысы','T = 1/ν','T = ν','T = 2ν','T = ν²'],
+['Толқын ұзындығының формуласы (T – период)','λ = υT','λ = υ/T','λ = T/υ','λ = υT²'],
+['Математикалық маятниктің периоды неге тәуелді?','Жіптің ұзындығына','Жүктің массасына','Жүктің түсіне','Жіптің жуандығына'],
+['Тепе-теңдік күйден ең үлкен ауытқу','Амплитуда','Период','Жиілік','Фаза'],
+['Бір толық тербеліс жасалатын уақыт','Период','Жиілік','Амплитуда','Фаза'],
+['Шеңбер бойымен бірқалыпты қозғалыстағы центрге тартқыш үдеу','a = υ²/R','a = υR','a = υ/R²','a = R/υ'],
+['Сызықтық және бұрыштық жылдамдық байланысы','υ = ωR','υ = ω/R','υ = R/ω','υ = ω²R'],
+['Бірқалыпты түзусызықты қозғалыстағы дененің үдеуі','0','9,8 м/с²','1 м/с²','Үнемі артады'],
+['72 км/сағ неше м/с-қа тең?','20 м/с','72 м/с','7,2 м/с','36 м/с'],
+['Массасы 2 кг дене 3 м/с² үдеумен қозғалады. Күш неге тең?','6 Н','5 Н','1,5 Н','9 Н'],
+['Массасы 2 кг, жылдамдығы 4 м/с дененің импульсі','8 кг·м/с','16 кг·м/с','2 кг·м/с','6 кг·м/с'],
+['1 кг дене 10 м биіктікте тұр (g = 10 м/с²). Потенциалдық энергиясы','100 Дж','10 Дж','1000 Дж','1 Дж'],
+['Импульстің сақталу заңы қандай жүйеде орындалады?','Тұйық жүйеде','Кез келген жүйеде','Тек тыныштықтағы жүйеде','Тек ауада'],
+['Атом ядросы неден тұрады?','Протон мен нейтроннан','Электрон мен протоннан','Тек электроннан','Фотоннан'],
+['Электронның заряды','Теріс','Оң','Нөлге тең','Кейде оң, кейде теріс'],
+['α-бөлшек дегеніміз','Гелий ядросы','Электрон','Фотон','Нейтрон'],
+['β-сәулесі дегеніміз','Электрондар ағыны','Гелий ядролары','Протондар ағыны','Дыбыс толқыны'],
+['γ-сәулесі дегеніміз','Электромагниттік толқын','Электрондар ағыны','Гелий ядролары','Нейтрондар ағыны'],
+['Бір элементтің изотоптары немен ерекшеленеді?','Нейтрон санымен','Протон санымен','Ядро зарядымен','Электрон зарядымен'],
+['Күн жүйесіндегі ең үлкен планета','Юпитер','Сатурн','Жер','Нептун'],
+['Күнге ең жақын планета','Меркурий','Шолпан','Марс','Жер'],
+['Жердің табиғи серігі','Ай','Марс','Күн','Шолпан'],
+['Бүкіләлемдік тартылыс заңын ашқан ғалым','Ньютон','Галилей','Эйнштейн','Кулон'],
+['Еркін түсуді Пиза мұнарасында зерттеген ғалым','Галилей','Ньютон','Архимед','Кеплер']];
+const NEWTON=[
+['Ньютонның бірінші заңы қалай аталады?','Инерция заңы','Бүкіләлемдік тартылыс заңы','Әсер мен қарсы әсер заңы','Гук заңы'],
+['Денеге күштер әсер етпесе немесе олардың тең әсерлісі нөлге тең болса, дене…','Тыныштықта не бірқалыпты түзусызықты қозғалыста болады','Міндетті түрде тоқтайды','Үдемелі қозғалады','Шеңбер бойымен қозғалады'],
+['Денелердің жылдамдығын бірден өзгерте алмау қасиеті','Инерттілік','Серпімділік','Үйкеліс','Салмақ'],
+['Сыртқы әсер болмағанда дене жылдамдығының сақталу құбылысы','Инерция','Диффузия','Деформация','Резонанс'],
+['Дененің инерттілігінің өлшемі болатын шама','Масса','Күш','Жылдамдық','Үдеу'],
+['Ньютонның бірінші заңы орындалатын санақ жүйелері','Инерциялық','Инерциялық емес','Айналмалы','Үдемелі'],
+['Автобус кенет тежелгенде жолаушылар қай жаққа ауады?','Алға','Артқа','Оңға','Жоғары'],
+['Автобус орнынан кенет қозғалғанда жолаушылар қай жаққа ауады?','Артқа','Алға','Жоғары','Солға'],
+['Кілемді қаққанда шаңның ұшып шығуы немен түсіндіріледі?','Инерциямен','Үйкеліспен','Тартылыспен','Серпімділікпен'],
+['Инерция құбылысын алғаш тәжірибе арқылы зерттеген ғалым','Галилей','Ньютон','Архимед','Кеплер'],
+['Бірқалыпты түзусызықты қозғалатын денеге әсер ететін күштердің тең әсерлісі','Нөлге тең','Салмағына тең','Массасына тең','Үнемі артады'],
+['Тұрақты жылдамдықпен түзу жолда келе жатқан пойызбен байланысқан санақ жүйесі','Инерциялық','Инерциялық емес','Айналмалы','Үдемелі'],
+['Жүк тиелген ауыр көлікті кенет тоқтату неге қиын?','Массасы, демек инерттілігі үлкен','Үйкеліс мүлде жоқ','Ол салмақсыз күйде','Оған тартылыс әсер етпейді'],
+['Балғаның басын бекіту үшін сабын жерге соғады. Бұл неге негізделген?','Инерцияға','Үйкеліске','Резонансқа','Диффузияға'],
+['Массасы үлкен дененің инерттілігі…','Үлкен','Кіші','Нөлге тең','Массаға тәуелсіз'],
+['Массаның ХБЖ-дағы өлшем бірлігі','Килограмм','Ньютон','Джоуль','Тонна'],
+['Күштің ХБЖ-дағы өлшем бірлігі','Ньютон','Килограмм','Джоуль','Паскаль'],
+['1 Н қандай бірлікке тең?','1 кг·м/с²','1 кг·м/с','1 кг/с²','1 кг·м²/с'],
+['Күш қандай шама?','Векторлық','Скалярлық','Өлшемсіз','Әрқашан тұрақты'],
+['Күшті өлшейтін құрал','Динамометр','Барометр','Спидометр','Термометр'],
+['Бір түзу бойымен бір жаққа бағытталған 3 Н және 5 Н күштердің тең әсерлісі','8 Н','2 Н','15 Н','4 Н'],
+['Бір түзу бойымен қарама-қарсы бағытталған 7 Н және 3 Н күштердің тең әсерлісі','4 Н','10 Н','21 Н','0 Н'],
+['Өзара перпендикуляр 3 Н және 4 Н күштердің тең әсерлісі','5 Н','7 Н','1 Н','12 Н'],
+['Тең әсерлі күш дегеніміз','Барлық күштердің векторлық қосындысы','Ең үлкен күш','Ең кіші күш','Ауырлық күші'],
+['Денеге әсер еткен күш оған не береді?','Үдеу','Масса','Көлем','Тығыздық'],
+['Ньютонның екінші заңының формуласы','a = F/m','a = F·m','a = m/F','F = m/a'],
+['Масса тұрақты болғанда күш 2 есе артса, үдеу…','2 есе артады','2 есе кемиді','Өзгермейді','4 есе артады'],
+['Күш тұрақты болғанда масса 2 есе артса, үдеу…','2 есе кемиді','2 есе артады','Өзгермейді','4 есе кемиді'],
+['Дененің үдеуі әрқашан қай бағытпен сәйкес келеді?','Тең әсерлі күштің бағытымен','Жылдамдықтың бағытымен','Қозғалысқа қарсы','Тік төмен'],
+['Массасы 5 кг денеге 10 Н күш әсер етеді. Үдеуі','2 м/с²','50 м/с²','0,5 м/с²','15 м/с²'],
+['Массасы 4 кг дене 2,5 м/с² үдеумен қозғалады. Тең әсерлі күш','10 Н','1,6 Н','6,5 Н','8 Н'],
+['20 Н күш денеге 4 м/с² үдеу береді. Дененің массасы','5 кг','80 кг','16 кг','0,2 кг'],
+['Массасы 1000 кг автомобиль 2 м/с² үдеумен қозғалады. Тең әсерлі күш','2000 Н','500 Н','1002 Н','200 Н'],
+['Массасы 0,5 кг допқа 2 Н күш әсер етеді. Үдеуі','4 м/с²','1 м/с²','0,25 м/с²','2,5 м/с²'],
+['Массасы 60 кг шаңғышыға 30 Н тежеуші күш әсер етеді. Үдеудің модулі','0,5 м/с²','2 м/с²','90 м/с²','1800 м/с²'],
+['Тыныштықтағы 2 кг денеге 4 Н күш 3 с әсер етті. Соңғы жылдамдығы','6 м/с','2 м/с','24 м/с','1,5 м/с'],
+['Массасы 2 т жүк көлігіне 4 кН тарту күші әсер етеді (үйкеліссіз). Үдеуі','2 м/с²','0,5 м/с²','8 м/с²','20 м/с²'],
+['F₁ күш денеге 2 м/с², F₂ күш 3 м/с² үдеу береді. Екеуі бір бағытта бірге әсер етсе, үдеу','5 м/с²','1 м/с²','6 м/с²','2,5 м/с²'],
+['Тұрақты тең әсерлі күш әсерінен дене қалай қозғалады?','Бірқалыпты үдемелі','Бірқалыпты','Тыныштықта тұрады','Шеңбер бойымен'],
+['Жылдамдығы 10 м/с, массасы 2 кг дене 5 с ішінде тоқтады. Тежеуші күш','4 Н','10 Н','20 Н','100 Н'],
+['F = ma формуласындағы a әрпі нені білдіреді?','Үдеуді','Ауданды','Амплитуданы','Жылдамдықты'],
+['Денеге әсер ететін күштердің тең әсерлісі нөлге тең. Дененің үдеуі','0','9,8 м/с²','1 м/с²','Шексіз үлкен'],
+['Массасы 3 кг денеге 6 Н күш әсер етеді. Үдеуі','2 м/с²','18 м/с²','0,5 м/с²','3 м/с²'],
+['Ньютонның екінші заңы бойынша үдеу массаға…','Кері пропорционал','Тура пропорционал','Тәуелсіз','Квадратына тура пропорционал'],
+['Ньютонның екінші заңы бойынша үдеу күшке…','Тура пропорционал','Кері пропорционал','Тәуелсіз','Квадратына кері пропорционал'],
+['Ньютонның үшінші заңының формуласы','F₁ = −F₂','F = ma','F = kx','F = μN'],
+['Өзара әрекеттесетін екі дененің бір-біріне әсер ету күштері модулі бойынша…','Тең','Әр түрлі','Массаларына тең','Біреуі нөлге тең'],
+['Ньютонның үшінші заңындағы әсер және қарсы әсер күштері қайда түсірілген?','Әр түрлі денелерге','Бір денеге','Тек Жерге','Тек ауыр денеге'],
+['Әсер және қарсы әсер күштерінің бағыттары','Қарама-қарсы','Бірдей','Перпендикуляр','Кез келген'],
+['Әсер және қарсы әсер күштерінің табиғаты','Бірдей','Әр түрлі','Кездейсоқ','Әрқашан электрлік'],
+['Зеңбірек атқан кезде оның кері тебуі қай заңмен түсіндіріледі?','Ньютонның III заңымен','Ньютонның I заңымен','Гук заңымен','Архимед заңымен'],
+['Зымыранның реактивті қозғалысы қай заңға негізделген?','Ньютонның III заңына','Паскаль заңына','Ом заңына','Ньютонның I заңына'],
+['Жүзгіш суды артқа итеріп, өзі алға жылжиды. Бұл қай заң?','Ньютонның III заңы','Инерция заңы','Гук заңы','Тартылыс заңы'],
+['Алма Жерді 1 Н күшпен тартады. Жер алманы қандай күшпен тартады?','1 Н','0 Н','Әлдеқайда көп','Әлдеқайда аз'],
+['Арқан тартыста екі команда арқанды қарама-қарсы 500 Н күшпен тартады. Арқанның керілу күші','500 Н','1000 Н','0 Н','250 Н'],
+['Қайықтан жағаға секіргенде қайықтың артқа жылжуы қай заңмен түсіндіріледі?','Ньютонның III заңымен','Ньютонның II заңымен','Инерция заңымен','Гук заңымен'],
+['Жүк машинасы мен жеңіл көлік соқтығысқанда қайсысына әсер ететін күш үлкен?','Күштер тең','Жеңіл көлікке','Жүк машинасына','Жылдамырағына'],
+['Үстелде жатқан кітапқа үстел тарапынан әсер ететін күш','Тіректің реакция күші','Салмақ','Үйкеліс күші','Архимед күші'],
+['Үстелдегі кітаптың үстелге әсер ететін күші','Салмақ','Ауырлық күші','Тіректің реакция күші','Архимед күші'],
+['Тіректің реакция күші қалай бағытталады?','Тірек бетіне перпендикуляр','Тірек бетінің бойымен','Тік төмен','Қозғалысқа қарсы'],
+['Бүкіләлемдік тартылыс заңын ашқан ғалым','Ньютон','Галилей','Кеплер','Кулон'],
+['Бүкіләлемдік тартылыс заңының формуласы','F = Gm₁m₂/r²','F = Gm₁m₂/r','F = m₁m₂/(Gr²)','F = Gr²/(m₁m₂)'],
+['Гравитациялық тұрақтының мәні','6,67·10⁻¹¹ Н·м²/кг²','9,8 м/с²','3·10⁸ м/с','6,67·10¹¹ Н·м²/кг²'],
+['Денелердің арақашықтығы 2 есе артса, тартылыс күші…','4 есе кемиді','2 есе кемиді','4 есе артады','Өзгермейді'],
+['Денелердің арақашықтығы 3 есе кемісе, тартылыс күші…','9 есе артады','3 есе артады','9 есе кемиді','3 есе кемиді'],
+['Денелердің біреуінің массасы 2 есе артса, тартылыс күші…','2 есе артады','4 есе артады','2 есе кемиді','Өзгермейді'],
+['Екі дененің де массасы 2 есе артса, тартылыс күші…','4 есе артады','2 есе артады','8 есе артады','Өзгермейді'],
+['Гравитациялық тұрақтыны тәжірибе жүзінде алғаш өлшеген ғалым','Кавендиш','Ньютон','Галилей','Кеплер'],
+['Ай мен Жердің бір-біріне тартылуы қандай күшке байланысты?','Бүкіләлемдік тартылыс күшіне','Үйкеліс күшіне','Серпімділік күшіне','Магнит күшіне'],
+['Тартылыс күші қандай денелер арасында әрекет етеді?','Барлық денелер арасында','Тек планеталар арасында','Тек зарядталған денелер арасында','Тек металдар арасында'],
+['Жер бетіне жақын жердегі ауырлық күшінің формуласы','F = mg','F = ma','F = kx','F = μN'],
+['Массасы 50 кг оқушыға әсер ететін ауырлық күші (g = 10 м/с²)','500 Н','50 Н','5 Н','5000 Н'],
+['Ауырлық күші қалай бағытталған?','Жердің центріне қарай','Тік жоғары','Көлденең','Қозғалыс бағытымен'],
+['Жер бетінен биіктеген сайын еркін түсу үдеуі…','Кемиді','Артады','Өзгермейді','Бірден нөлге тең болады'],
+['Айдағы еркін түсу үдеуі шамамен','1,6 м/с²','9,8 м/с²','25 м/с²','0 м/с²'],
+['Еркін түсу үдеуі дененің массасына…','Тәуелді емес','Тура пропорционал','Кері пропорционал','Квадратына тәуелді'],
+['Ауасыз түтікте қауырсын мен тиын бір биіктіктен бірге құлайды. Қайсысы бұрын түседі?','Екеуі бірге түседі','Тиын','Қауырсын','Екеуі де түспейді'],
+['Массасы 2 кг денеге Айда әсер ететін ауырлық күші (g = 1,6 м/с²)','3,2 Н','20 Н','1,6 Н','0,8 Н'],
+['Салмақ дегеніміз','Дененің тірекке не аспаға әсер ететін күші','Дененің массасы','Дененің көлемі','Еркін түсу үдеуі'],
+['Салмақтың ХБЖ-дағы өлшем бірлігі','Ньютон','Килограмм','Грамм','Джоуль'],
+['Тыныштықтағы массасы 3 кг дененің салмағы (g = 10 м/с²)','30 Н','3 Н','0,3 Н','300 Н'],
+['Салмақсыздық күйі қашан болады?','Дене тек ауырлық күші әсерімен қозғалғанда','Дене тыныштықта тұрғанда','Дене жоғары үдемелі көтерілгенде','Дене суда жүзгенде'],
+['Лифт жоғары үдемелі көтерілгенде адамның салмағы…','Артады','Кемиді','Өзгермейді','Нөлге тең болады'],
+['Лифт төмен қарай үдемелі қозғалғанда (a < g) адамның салмағы…','Кемиді','Артады','Өзгермейді','Екі есе артады'],
+['Массасы 50 кг адам 2 м/с² үдеумен жоғары көтерілген лифтте тұр (g = 10 м/с²). Салмағы','600 Н','500 Н','400 Н','100 Н'],
+['Халықаралық ғарыш станциясындағы ғарышкерлер қандай күйде болады?','Салмақсыздық','Асқын салмақ','Тыныштық','Инерциясыз'],
+['Масса мен салмақтың айырмашылығы','Салмақ – күш, масса – инерттілік өлшемі','Олар бір шама','Масса – күш, салмақ – инерттілік өлшемі','Екеуі де килограммен өлшенеді'],
+['Гук заңының формуласы','F = kx','F = mg','F = ma','F = μN'],
+['Гук заңындағы k шамасы','Қатаңдық','Үйкеліс коэффициенті','Масса','Үдеу'],
+['Қатаңдығы 100 Н/м серіппе 0,05 м-ге созылды. Серпімділік күші','5 Н','2000 Н','0,5 Н','50 Н'],
+['Қатаңдығы 200 Н/м серіппеге 4 Н күш түсірілді. Серіппенің созылуы','2 см','50 см','8 см','0,5 см'],
+['Сырғанау үйкеліс күшінің формуласы','F = μN','F = kx','F = mg','F = Gm₁m₂/r²'],
+['Сырғанау үйкеліс күші қалай бағытталады?','Қозғалысқа қарсы','Қозғалыс бағытымен','Тік жоғары','Тік төмен'],
+['Массасы 10 кг жәшік еденмен сырғанайды, μ = 0,3 (g = 10 м/с²). Үйкеліс күші','30 Н','3 Н','300 Н','33 Н'],
+['Үйкелісті азайту үшін не қолданылады?','Майлау, подшипник','Құм себу','Бұдырлы бет','Доңғалаққа шынжыр кию'],
+['Мұзда сырғанаған шайба біраз уақыттан соң неге тоқтайды?','Үйкеліс күші әсерінен','Инерциядан','Салмақсыздықтан','Тартылыс күші жоқ болғандықтан'],
+['Шеңбер бойымен бірқалыпты қозғалатын денеге әсер ететін тең әсерлі күштің бағыты','Шеңбердің центріне қарай','Жанама бойымен','Центрден сыртқа қарай','Тік жоғары'],
+['Бірінші ғарыштық жылдамдық шамамен','7,9 км/с','11,2 км/с','16,7 км/с','340 м/с'],
+['Жасанды серікті Жер орбитасында ұстап тұратын күш','Бүкіләлемдік тартылыс күші','Үйкеліс күші','Серпімділік күші','Архимед күші'],
+['Жердің алғашқы жасанды серігі ұшырылған жыл','1957','1961','1969','1945']];
+
+const DEF={nameL:'Көктер',nameR:'Қызылдар',mode:'newton',lvl:2,need:6,time:120,pen:'freeze',own:''};
+const SEGS={mode:[['newton','Ньютон заңдары, 100 сұрақ'],['phys','Физика, аралас'],['math','Ауызша есеп'],['own','Өз сұрақтарым']],lvl:[[1,'Жеңіл'],[2,'Орташа'],[3,'Қиын']],need:[[4,'4'],[6,'6'],[8,'8'],[10,'10']],time:[[0,'Шексіз'],[60,'1 мин'],[120,'2 мин'],[180,'3 мин']],pen:[['freeze','2 секунд күтеді'],['slip','Арқан қарсыласқа жылжиды']]};
+const KEYS={L:['1','2','3','4'],R:['7','8','9','0']};
+const IC={pause:'<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',play:'<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>',on:'<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="o" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',off:'<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="o" d="M16 9l5 6M21 9l-5 6"/></svg>'};
+const W0=800,SPAN=260,ARM=330,NS='http://www.w3.org/2000/svg';
+const mk=()=>({ok:0,bad:0,str:0,max:0});
+const S={set:{...DEF},pos:-1,st:{L:mk(),R:mk()},run:false,pause:false,left:120,el:0,gid:0,started:false};
+const T={L:{q:null,busy:false,lock:false},R:{q:null,busy:false,lock:false}};
+let snd=true,AC=null;
+try{Object.assign(S.set,JSON.parse(localStorage.getItem('arqan-set2')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('arqan-set2',JSON.stringify(S.set))}catch(e){}};
+const other=s=>s==='L'?'R':'L';
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const parseOwn=t=>t.split('\n').map(l=>l.split('|').map(x=>x.trim()).filter(Boolean)).filter(r=>r.length>=3).map(r=>r.slice(0,5));
+const bank=()=>{if(S.set.mode==='own'){const o=parseOwn(S.set.own);if(o.length>=2)return o}return S.set.mode==='newton'?NEWTON:PHYS};
+let DECK=[],deckKey='';
+
+function tone(seq,type='sine',d=.09){
+  if(!snd)return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+    seq.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t+i*d);g.gain.exponentialRampToValueAtTime(.16,t+i*d+.012);g.gain.exponentialRampToValueAtTime(.0001,t+i*d+d*1.7);
+      o.connect(g).connect(AC.destination);o.start(t+i*d);o.stop(t+i*d+d*1.9)});}catch(e){}
+}
+
+function genMath(lvl){
+  let a,b,op,ans;
+  const ops=lvl===1?['+','−']:lvl===2?['+','−','×']:['×','÷','+','−'];
+  op=ops[rint(0,ops.length-1)];
+  if(op==='+'){a=lvl===1?rint(3,20):lvl===2?rint(15,79):rint(120,480);b=lvl===1?rint(2,15):lvl===2?rint(11,49):rint(60,390);ans=a+b}
+  else if(op==='−'){a=lvl===1?rint(8,20):lvl===2?rint(40,99):rint(300,900);b=lvl===1?rint(2,a-1):lvl===2?rint(11,a-5):rint(45,a-50);ans=a-b}
+  else if(op==='×'){a=lvl===3?rint(11,25):rint(2,9);b=rint(3,9);ans=a*b}
+  else{b=rint(3,12);ans=rint(3,15);a=b*ans}
+  const pool=shuffle([1,-1,2,-2,10,-10,b,-b,3].map(d=>ans+d)).filter((v,i,arr)=>v>=0&&v!==ans&&arr.indexOf(v)===i);
+  return{t:`${a} ${op} ${b} = ?`,opts:[ans,...pool.slice(0,3)].map(String),src:-1};
+}
+function makeQ(s){
+  if(S.set.mode==='math')return genMath(S.set.lvl);
+  const B=bank(),key=S.set.mode+':'+B.length+':'+(S.set.mode==='own'?S.set.own:'');
+  if(key!==deckKey||!DECK.length){DECK=shuffle([...B.keys()]);deckKey=key}
+  const oq=T[other(s)].q;
+  if(oq&&oq.src===DECK[DECK.length-1]&&DECK.length>1){const n=DECK.length;[DECK[n-1],DECK[0]]=[DECK[0],DECK[n-1]]}
+  const i=DECK.pop(),r=B[i];return{t:r[0],opts:r.slice(1),src:i,num:B.length-DECK.length,tot:B.length};
+}
+function ask(s){
+  const q=makeQ(s);q.items=shuffle(q.opts.map((x,k)=>({x,ok:k===0})));T[s].q=q;
+  const el=$('#s'+s);el.querySelector('.q').textContent=q.t;el.querySelector('.qn').textContent=q.tot?`Сұрақ ${q.num}/${q.tot}`:'';
+  const box=el.querySelector('.opts');box.classList.remove('wait');
+  box.innerHTML=q.items.map((_,i)=>`<button class="opt" data-i="${i}"><kbd>${KEYS[s][i]}</kbd><span></span></button>`).join('');
+  box.querySelectorAll('.opt span').forEach((sp,i)=>sp.textContent=q.items[i].x);
+}
+
+function answer(s,i){
+  const t=T[s];if(!S.run||S.pause||t.busy||t.lock||!t.q||!t.q.items[i])return;
+  t.busy=true;const g=S.gid,st=S.st[s],box=$('#s'+s+' .opts'),btns=box.querySelectorAll('.opt');box.classList.add('wait');
+  if(t.q.items[i].ok){
+    btns[i].classList.add('ok');st.ok++;st.str++;st.max=Math.max(st.max,st.str);tone([520,780]);move(s,true);
+    setTimeout(()=>{if(g!==S.gid)return;t.busy=false;if(S.run)ask(s)},420);
+  }else{
+    btns[i].classList.add('bad');t.q.items.forEach((it,k)=>{if(it.ok)btns[k].classList.add('ok')});
+    st.bad++;st.str=0;tone([190,130],'square',.1);upd();
+    const slip=S.set.pen==='slip',dur=slip?1100:2000;
+    if(slip)setTimeout(()=>{if(g===S.gid&&S.run)move(other(s),false)},250);
+    setTimeout(()=>{if(g!==S.gid||!S.run)return;t.lock=true;const lk=$('#s'+s+' .lock');lk.style.setProperty('--pen',dur+'ms');
+      const bar=lk.querySelector('i');bar.style.animation='none';bar.getBoundingClientRect();bar.style.animation='';lk.classList.add('on');
+      setTimeout(()=>{if(g!==S.gid)return;lk.classList.remove('on');t.lock=false;t.busy=false;if(S.run)ask(s)},dur)},650);
+  }
+}
+function off(){return S.pos*SPAN/S.set.need}
+function move(s,credit){
+  S.pos+=s==='L'?-1:1;upd();anim(s);dust(s);if(credit)pop(s,'+1');
+  const n=S.set.need;if(S.pos<=-n)finish('L','line');else if(S.pos>=n)finish('R','line');
+}
+function restart(el,c){el.classList.remove(c);el.getBoundingClientRect();el.classList.add(c)}
+function anim(s){restart($('#c'+s+' .body'),'tug');restart($('#c'+other(s)+' .body'),'stum')}
+function fx(tag,attrs,cls){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);e.setAttribute('class',cls);$('#fx').appendChild(e);return e}
+function dust(s){
+  const x=s==='L'?W0-ARM+off()-20:W0+ARM+off()+20;
+  for(let i=0;i<6;i++){const c=fx('circle',{cx:x+rint(-40,40),cy:324+rint(-4,4),r:rint(6,12)},'puff');c.style.setProperty('--dx',(s==='L'?-1:1)*rint(10,44)+'px');setTimeout(()=>c.remove(),800)}
+}
+function pop(s,txt){const x=s==='L'?W0-ARM+off()-64:W0+ARM+off()+64;const e=fx('text',{x,y:120},'pop');e.style.fill=`var(--${s})`;e.textContent=txt;setTimeout(()=>e.remove(),950)}
+
+function upd(){
+  const n=S.set.need;
+  $('#scL').textContent=S.st.L.ok;$('#scR').textContent=S.st.R.ok;
+  $('#sL .left b').textContent=Math.max(0,n+S.pos);$('#sR .left b').textContent=Math.max(0,n-S.pos);
+  for(const s of['L','R']){const b=$('#s'+s+' .str');b.querySelector('b').textContent=S.st[s].str;b.classList.toggle('on',S.st[s].str>=3)}
+  $('#pull').style.transform=`translate(${off()}px,0px)`;
+}
+function names(){
+  $('#nmL').textContent=S.set.nameL;$('#nmR').textContent=S.set.nameR;
+  $('#sL .tn').textContent=S.set.nameL;$('#sR .tn').textContent=S.set.nameR;
+}
+function clock(){
+  const cd=S.set.time>0,v=cd?Math.ceil(S.left):Math.floor(S.el);
+  $('#clock').textContent=Math.floor(v/60)+':'+String(v%60).padStart(2,'0');
+  $('#clock').classList.toggle('low',cd&&S.run&&S.left<=10);
+}
+
+function person(c,d){
+  return `<g class="body"><ellipse class="shadow" cx="-20" cy="2" rx="64" ry="8"/>
+<path class="leg" d="M-18 -78 L-38 -40 L-60 -6"/><path class="leg" d="M-18 -78 L8 -44 L24 -6"/>
+<ellipse class="shoe" cx="-56" cy="-4" rx="16" ry="7"/><ellipse class="shoe" cx="30" cy="-4" rx="16" ry="7"/>
+<path class="arm" style="stroke:${d}" d="M-54 -146 L-14 -122 L20 -94"/>
+<path class="torso" style="stroke:${c}" d="M-20 -82 L-52 -144"/><path class="belt" d="M-34 -84 L-6 -88"/>
+<circle class="skin" cx="-64" cy="-176" r="22"/>
+<path class="hair" d="M-87 -172 C-92 -200 -60 -210 -44 -192 C-56 -191 -64 -188 -70 -182 C-76 -177 -82 -174 -87 -172Z"/>
+<path class="band" style="stroke:${c}" d="M-85 -186 L-44 -192"/><path class="band" style="stroke:${c}" d="M-84 -186 L-106 -178 M-84 -186 L-101 -166"/>
+<circle class="eye" cx="-51" cy="-179" r="2.8"/><path class="mouth" d="M-52 -164 L-44 -165"/>
+<path class="arm" style="stroke:${c}" d="M-46 -140 L-6 -116 L46 -94"/>
+<circle class="skin" cx="20" cy="-94" r="8.5"/><circle class="skin" cx="46" cy="-94" r="8.5"/></g>`;
+}
+function scene(){
+  let sd=11;const r=()=>(sd=sd*16807%2147483647)/2147483647;
+  let h=`<defs><linearGradient id="gSky" gradientUnits="userSpaceOnUse" x1="0" y1="-260" x2="0" y2="300"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient>
+<linearGradient id="gGr" gradientUnits="userSpaceOnUse" x1="0" y1="300" x2="0" y2="420"><stop offset="0" style="stop-color:var(--g1)"/><stop offset="1" style="stop-color:var(--g2)"/></linearGradient></defs>
+<rect x="-2400" y="-3000" width="6400" height="3330" fill="url(#gSky)"/>`;
+  for(let i=0;i<60;i++)h+=`<circle class="st" cx="${(-1400+r()*3600).toFixed(0)}" cy="${(-500+r()*660).toFixed(0)}" r="${(.8+r()*1.6).toFixed(1)}"/>`;
+  h+=`<circle class="halo" cx="1240" cy="78" r="74"/><circle class="sun" cx="1240" cy="78" r="44"/>`;
+  [[260,70,1],[620,40,.8],[980,110,.7],[1560,60,.9],[-120,120,.8]].forEach(([x,y,k])=>{h+=`<g class="cl" transform="translate(${x} ${y}) scale(${k})"><ellipse cx="0" cy="0" rx="62" ry="18"/><circle cx="-20" cy="-12" r="22"/><circle cx="16" cy="-16" r="28"/></g>`});
+  const pk=[];for(let x=-1700,i=0;x<=3300;x+=150,i++)pk.push([x,i%2?160+r()*60:232+r()*26]);
+  h+=`<polygon class="far" points="${pk.map(p=>p.join(' ')).join(' ')} 3300 320 -1700 320"/>`;
+  for(let i=1;i<pk.length-1;i+=2){const[x,y]=pk[i],[xl,yl]=pk[i-1],[xr,yr]=pk[i+1],f=.24;
+    h+=`<polygon class="snow" points="${x} ${y} ${x+(xr-x)*f} ${y+(yr-y)*f} ${x+(xr-x)*.08} ${y+(yr-y)*.14} ${x-(x-xl)*.06} ${y+(yl-y)*.2} ${x+(xl-x)*f} ${y+(yl-y)*f}"/>`}
+  let d='M-1700 300';for(let x=-1700;x<3300;x+=320)d+=` Q${x+160} ${244+r()*30} ${x+320} ${284+r()*14}`;
+  h+=`<path class="near" d="${d} L3300 330 L-1700 330Z"/>`;
+  [[410,302,1,'ybL'],[1190,304,.9,'ybR'],[1330,300,.7,'ybL']].forEach(([x,y,k,c])=>{h+=`<g transform="translate(${x} ${y}) scale(${k})"><path class="yurt" d="M-46 0 L-46 -30 Q0 -70 46 -30 L46 0Z"/><rect class="${c}" x="-46" y="-30" width="92" height="7"/><path class="${c}" d="M-10 -58 Q0 -66 10 -58Z"/><rect class="door" x="-10" y="-20" width="20" height="20" rx="2"/></g>`});
+  h+=`<rect x="-2400" y="298" width="6400" height="2000" fill="url(#gGr)"/>`;
+  for(let i=0;i<110;i++){const x=(-700+r()*2900).toFixed(0),y=(312+r()*84).toFixed(0);h+=`<path class="tuft" d="M${x} ${y} l-5 -9 M${x} ${y} l1 -11 M${x} ${y} l6 -8"/>`}
+  h+=`<polygon class="chalk" points="${W0-3} 300 ${W0+3} 300 ${W0+9} 420 ${W0-9} 420"/>`;
+  [['L',W0-SPAN],['R',W0+SPAN]].forEach(([s,x])=>{h+=`<polygon class="fl${s}" opacity=".55" points="${x-3} 300 ${x+3} 300 ${x+8} 420 ${x-8} 420"/><path class="pole" d="M${x} 312 V170"/><path class="fl${s}" d="M${x} 172 ${s==='L'?'l-56 16 l56 16':'l56 16 l-56 16'}Z"/>`});
+  h+=`<g id="pull"><path class="rope" d="M-1500 236 H3100"/><path class="rope2" d="M-1500 236 H3100"/>
+<g id="cL"><g transform="translate(${W0-ARM} 330)">${person('var(--L)','var(--Ld)')}</g></g>
+<g id="cR"><g transform="translate(${W0+ARM} 330) scale(-1 1)">${person('var(--R)','var(--Rd)')}</g></g>
+<path class="rib2" d="M${W0} 236 l-13 40 l10 -5 l6 11Z"/><path class="rib" d="M${W0} 236 l14 36 l-10 -3 l-4 11Z"/><circle class="knot" cx="${W0}" cy="236" r="10"/></g><g id="fx"></g>`;
+  $('#scene').innerHTML=h;
+}
+const sv=$('#scene');
+const fit=()=>{const W=sv.clientWidth,H=sv.clientHeight;if(!W||!H)return;const MINW=1360,BH=400;let w=BH*W/H,h=BH;if(w<MINW){w=MINW;h=MINW*H/W}sv.setAttribute('viewBox',`${W0-w/2} ${BH-h} ${w} ${h}`)};
+const roScene=new ResizeObserver(fit);roScene.observe(sv);
+
+function segs(){
+  document.querySelectorAll('.seg').forEach(box=>{const k=box.dataset.k;
+    box.innerHTML=SEGS[k].map(([v,l])=>`<button type="button" data-v="${v}" aria-pressed="${String(S.set[k])===String(v)}">${l}</button>`).join('')});
+  $('#fLvl').style.display=S.set.mode==='math'?'':'none';
+  $('#fOwn').style.display=S.set.mode==='own'?'':'none';
+  const n=parseOwn(S.set.own).length;
+  $('#ownN').textContent=n>=2?`${n} сұрақ дайын.`:`Әзірге ${n} сұрақ. Кемінде 2 сұрақ керек, әйтпесе физика сұрақтары қолданылады.`;
+}
+document.querySelectorAll('.seg').forEach(box=>box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=box.dataset.k,v=b.dataset.v;S.set[k]=isNaN(+v)?v:+v;save();segs()}));
+$('#iOwn').addEventListener('input',e=>{S.set.own=e.target.value;save();segs()});
+
+function openSet(){
+  if(S.run&&!S.pause)setPause(true,false);
+  $('#iL').value=S.set.nameL;$('#iR').value=S.set.nameR;$('#iOwn').value=S.set.own;segs();
+  $('#bClose').style.display=S.started&&S.run?'':'none';
+  $('#ovPause').classList.remove('on');$('#ovWin').classList.remove('on');$('#ovSet').classList.add('on');
+}
+function setPause(p,show=true){
+  if(!S.run)return;S.pause=p;$('#bPause').innerHTML=p?IC.play:IC.pause;$('#bPause').setAttribute('aria-label',p?'Жалғастыру':'Үзіліс');
+  $('#sides').classList.toggle('idle',p);$('#ovPause').classList.toggle('on',p&&show);
+}
+function start(){
+  S.set.nameL=$('#iL').value.trim()||DEF.nameL;S.set.nameR=$('#iR').value.trim()||DEF.nameR;save();
+  if(!S.started)DECK=[];S.gid++;S.pos=0;S.st={L:mk(),R:mk()};S.el=0;S.left=S.set.time;S.run=true;S.pause=false;S.started=true;
+  for(const s of['L','R']){T[s]={q:null,busy:false,lock:false};$('#s'+s+' .lock').classList.remove('on');$('#c'+s+' .body').classList.remove('fallen','cheer','tug','stum')}
+  names();ask('L');ask('R');upd();clock();
+  $('#sides').classList.remove('idle');$('#bPause').innerHTML=IC.pause;
+  document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'));tone([392,523,659]);
+}
+function finish(w,why){
+  if(!S.run)return;S.run=false;S.gid++;$('#sides').classList.add('idle');clock();
+  if(w){$('#c'+w+' .body').classList.add('cheer');$('#c'+other(w)+' .body').classList.add('fallen');confetti(w)}
+  tone(w?[523,659,784,1046]:[440,440],'triangle',.13);
+  setTimeout(()=>{
+    const card=$('#winCard');card.className='card win'+(w?' '+w:'');
+    $('#wWhy').textContent=w?(why==='time'?'Уақыт бітті. Жеңімпаз':'Лента жеңіс туынан өтті. Жеңімпаз'):'Уақыт бітті';
+    $('#wName').textContent=w?S.set['name'+w]:'Тең ойын';
+    $('#wT1').textContent=S.set.nameL;$('#wT2').textContent=S.set.nameR;
+    const pc=s=>{const a=S.st[s],n=a.ok+a.bad;return n?Math.round(a.ok/n*100)+'%':'—'};
+    const rows=[['Дұрыс жауап','ok'],['Қате жауап','bad'],['Ең ұзақ серия','max']];
+    $('#wBody').innerHTML=rows.map(([l,k])=>`<tr><td>${l}</td><td>${S.st.L[k]}</td><td>${S.st.R[k]}</td></tr>`).join('')+`<tr><td>Дәлдік</td><td>${pc('L')}</td><td>${pc('R')}</td></tr>`;
+    const v=Math.round(S.el);$('#wTime').textContent=`Ойын ұзақтығы: ${Math.floor(v/60)} мин ${v%60} с`;
+    $('#ovWin').classList.add('on');
+  },w?1400:400);
+}
+function confetti(w){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const box=$('#conf'),cols=[getComputedStyle(document.body).getPropertyValue('--'+w)||'#1d5bd6','#ffc83d','#ffffff','#1fae5b'];
+  box.innerHTML=Array.from({length:80},()=>`<i style="left:${Math.random()*100}%;background:${cols[rint(0,3)]};animation-duration:${(2+Math.random()*2).toFixed(2)}s;animation-delay:${(Math.random()*.8).toFixed(2)}s;transform:rotate(${rint(0,180)}deg)"></i>`).join('');
+  setTimeout(()=>box.innerHTML='',4800);
+}
+let last=performance.now();
+const tick=setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!S.run||S.pause)return;S.el+=dt;
+  if(S.set.time>0){S.left=Math.max(0,S.left-dt);if(S.left<=0){const w=S.pos<0?'L':S.pos>0?'R':S.st.L.ok>S.st.R.ok?'L':S.st.R.ok>S.st.L.ok?'R':null;finish(w,'time');return}}clock()},200);
+
+$('#sides').addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;answer(b.closest('.side').dataset.s,+b.dataset.i)});
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea'))return;
+  if(document.querySelector('.ov.on'))return;
+  if(e.code==='Space'){e.preventDefault();setPause(!S.pause);return}
+  for(const s of['L','R']){const i=KEYS[s].indexOf(e.key);if(i>=0)answer(s,i)}
+});
+$('#bGo').addEventListener('click',start);
+$('#bAgain').addEventListener('click',()=>{$('#iL').value=S.set.nameL;$('#iR').value=S.set.nameR;start()});
+$('#bToSet').addEventListener('click',openSet);
+$('#bSet').addEventListener('click',openSet);
+$('#bClose').addEventListener('click',()=>{$('#ovSet').classList.remove('on');setPause(false)});
+$('#bPause').addEventListener('click',()=>setPause(!S.pause));
+$('#bResume').addEventListener('click',()=>setPause(false));
+$('#bRestart').addEventListener('click',()=>{$('#ovPause').classList.remove('on');$('#iL').value=S.set.nameL;$('#iR').value=S.set.nameR;start()});
+$('#bSnd').addEventListener('click',()=>{snd=!snd;$('#bSnd').innerHTML=snd?IC.on:IC.off;$('#bSnd').setAttribute('aria-label',snd?'Дыбысты өшіру':'Дыбысты қосу')});
+$('#bFs').addEventListener('click',()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}});
+
+function boot(d){
+  if(d&&d.set)Object.assign(S.set,d.set);
+  $('#bPause').innerHTML=IC.pause;$('#bSnd').innerHTML=IC.on;
+  scene();fit();names();ask('L');ask('R');upd();S.left=S.set.time;clock();openSet();
+}
+const hot=window.claude&&window.claude.hot;
+if(hot&&hot.snapshot)hot.snapshot(()=>({set:S.set}));
+if(hot&&hot.ready)hot.ready(boot);else boot(hot&&hot.data?hot.data:{});
+}
+</script>
+</body>
+</html>
